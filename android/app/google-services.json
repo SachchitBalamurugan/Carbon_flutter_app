@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "610320224091",
+    "project_id": "carbonmobileapp-e6dc3",
+    "storage_bucket": "carbonmobileapp-e6dc3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:610320224091:android:0911472b4a49e0fc33d47e",
+        "android_client_info": {
+          "package_name": "com.example.untitled"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDIaHTjf2HkWF4SN-t0VBid0eU6oIrupBI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,21 +1,40 @@
 {
   "project_info": {
-    "project_number": "610320224091",
-    "project_id": "carbonmobileapp-e6dc3",
-    "storage_bucket": "carbonmobileapp-e6dc3.firebasestorage.app"
+    "project_number": "423684973673",
+    "project_id": "testcarbon-1cbc1",
+    "storage_bucket": "testcarbon-1cbc1.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:610320224091:android:0911472b4a49e0fc33d47e",
+        "mobilesdk_app_id": "1:423684973673:android:5658b2509d1fb4f41e2ef8",
         "android_client_info": {
-          "package_name": "com.example.untitled"
+          "package_name": "com.example.app"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDIaHTjf2HkWF4SN-t0VBid0eU6oIrupBI"
+          "current_key": "AIzaSyD5LlElJDp-LvTq0bQYiG67WMSPTkFdV8A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:423684973673:android:ee5a6ccac8e372eb1e2ef8",
+        "android_client_info": {
+          "package_name": "com.example.testC"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5LlElJDp-LvTq0bQYiG67WMSPTkFdV8A"
         }
       ],
       "services": {

@@ -67,6 +67,7 @@ class _ActivityTrackerState extends State<ActivityTracker> {
   void initState() {
     super.initState();
     _getUsername(); // Get the username when the widget initializes
+    _fetchActivitiesFromFirestore(); // Fetch activities from Firebase
   }
 
   // Function to get the username from Firestore
@@ -91,6 +92,47 @@ class _ActivityTrackerState extends State<ActivityTracker> {
     }
   }
 
+  // Function to fetch activities from Firestore and display them
+  // Function to fetch activities from Firestore and calculate total emissions
+  Future<void> _fetchActivitiesFromFirestore() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('users') // Users collection
+          .doc(user.uid) // The user's UID as the document ID
+          .collection('activities') // Subcollection for activities
+          .orderBy('timestamp', descending: true) // Order activities by timestamp
+          .get();
+
+      double totalEmissionsFromFirestore = 0.0;
+
+      // Iterate over the fetched activities to sum emissions
+      for (var doc in snapshot.docs) {
+        double emissions = doc['emissions']?.toDouble() ?? 0.0; // Ensure it's a double
+        totalEmissionsFromFirestore += emissions;
+      }
+
+      // Print total emissions to the console
+      print("Total emissions: $totalEmissionsFromFirestore kg CO2");
+
+      setState(() {
+        addedActivities.clear();
+        addedActivities.addAll(snapshot.docs.map((doc) {
+          return {
+            'activity': doc['activity'],
+            'quantity': doc['quantity'],
+            'emissions': doc['emissions'].toString(),
+            'category': doc['category'],
+          };
+        }).toList());
+
+        // Update the total emissions in the UI
+        totalEmissions = totalEmissionsFromFirestore;
+      });
+    }
+  }
+
+
   // Function to filter activities based on the selected category
   void _filterActivities(String? category) {
     if (category != null && categoryActivities.containsKey(category)) {
@@ -102,7 +144,7 @@ class _ActivityTrackerState extends State<ActivityTracker> {
   }
 
   // Function to add a new activity
-  // Add to the _addActivity function:
+  // Function to add a new activity
   Future<void> _addActivity() async {
     String quantity = '';
 
@@ -149,7 +191,8 @@ class _ActivityTrackerState extends State<ActivityTracker> {
                       setState(() {
                         selectedActivity = value;
                         emissions = filteredActivities
-                            .firstWhere((activity) => activity['name'] == value)['emissions'];
+                            .firstWhere((activity) =>
+                        activity['name'] == value)['emissions'];
                       });
                       print('Selected activity: $selectedActivity');
                     },
@@ -178,12 +221,13 @@ class _ActivityTrackerState extends State<ActivityTracker> {
                         addedActivities.add({
                           'activity': selectedActivity,
                           'quantity': quantity,
-                          'emissions': totalEmissionsForActivity.toStringAsFixed(2), // Add total emissions
+                          'emissions': totalEmissionsForActivity.toStringAsFixed(2),
                           'category': selectedCategory,
                           'color': _getCategoryColor(selectedCategory),
                         });
-                        // Update total emissions and points
-                        totalEmissions += totalEmissionsForActivity; // Update total emissions
+
+                        // Update total emissions
+                        totalEmissions += totalEmissionsForActivity; // Add the emissions of the new activity
                         totalPoints += 10; // Placeholder points per activity
                       });
 
@@ -199,11 +243,10 @@ class _ActivityTrackerState extends State<ActivityTracker> {
                           'quantity': quantity,
                           'emissions': totalEmissionsForActivity,
                           'category': selectedCategory,
-                          'timestamp': FieldValue.serverTimestamp(), // Add a timestamp
+                          'timestamp': FieldValue.serverTimestamp(), // Save the current timestamp
                         });
                       }
 
-                      print('Added activity: ${addedActivities.last}');
                       Navigator.pop(context);
                       setState(() {}); // Trigger a rebuild after the dialog closes
                     }
@@ -217,6 +260,8 @@ class _ActivityTrackerState extends State<ActivityTracker> {
       },
     );
   }
+
+  // Function to get color based on category
   // Function to get color based on category
   Color _getCategoryColor(String? category) {
     switch (category) {
@@ -234,6 +279,7 @@ class _ActivityTrackerState extends State<ActivityTracker> {
         return Colors.grey;
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -317,33 +363,34 @@ class _ActivityTrackerState extends State<ActivityTracker> {
             ),
 
             const SizedBox(height: 20),
-
             // List of Activities
-            Expanded(
-              child: ListView.builder(
-                itemCount: addedActivities.length,
-                itemBuilder: (context, index) {
-                  final activity = addedActivities[index];
-                  return Card(
-                    margin: const EdgeInsets.symmetric(vertical: 8),
-                    elevation: 4,
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: activity['color'] ?? Colors.grey,
-                        radius: 8,
+            // Fixed Space with Scrollable List of Activities
+            Container(
+              height: 300, // Set a fixed height for the scrollable space
+              child: SingleChildScrollView(
+                child: Column(
+                  children: addedActivities.map((activity) {
+                    return Card(
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      elevation: 4,
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: _getCategoryColor(activity['category']),
+                          radius: 8,
+                        ),
+                        title: Text(activity['activity'] ?? ''),
+                        subtitle: Text(
+                          'Quantity: ${activity['quantity']} CO2 Emissions: ${activity['emissions']} kg',
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                        trailing: Text(
+                          activity['category'] ?? '',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
                       ),
-                      title: Text(activity['activity'] ?? ''),
-                      subtitle: Text(
-                        'Quantity: ${activity['quantity']} CO2 Emissions: ${activity['emissions']} kg',
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                      trailing: Text(
-                        activity['category'] ?? '',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  );
-                },
+                    );
+                  }).toList(),
+                ),
               ),
             ),
           ],

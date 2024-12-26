@@ -58,25 +58,53 @@ class RewardPage extends StatelessWidget {
                     color: Colors.red[400]!,
                     imagePath: 'assets/apple_logo.png', // Replace with your image path
                     rewardText: 'Amazon Gift Card - \$20',
-                    points: totalPoints == 0 ? 0 : (100 - totalPoints) / 100 < 0 ? 1 : (100 - totalPoints) / 100,
+                    points: totalPoints == 100
+                        ? 1
+                        : (totalPoints == 0
+                        ? 0
+                        : (100 - totalPoints) / 100 < 0
+                        ? 1
+                        : (100 - totalPoints) / 100),
+                    redeemMessage: 'dasajsadksal', // First card message
                   ),
                   RewardCard(
                     color: Colors.blue[400]!,
                     imagePath: 'assets/apple_logo.png', // Replace with your image path
                     rewardText: 'Amazon Gift Card - \$40',
-                    points: totalPoints == 0 ? 0 : (150 - totalPoints) / 150 < 0 ? 1 : (150 - totalPoints) / 150,
+                    points: totalPoints == 150
+                        ? 1
+                        : (totalPoints == 0
+                        ? 0
+                        : (150 - totalPoints) / 150 < 0
+                        ? 1
+                        : (150 - totalPoints) / 150),
+                    redeemMessage: 'jsasijfasioasfijo', // Second card message
                   ),
                   RewardCard(
                     color: Colors.green[400]!,
                     imagePath: 'assets/apple_logo.png', // Replace with your image path
                     rewardText: 'Amazon Gift Card - \$60',
-                    points: totalPoints == 0 ? 0 : (200 - totalPoints) / 200 < 0 ? 1 : (200 - totalPoints) / 200,
+                    points: totalPoints == 200
+                        ? 1
+                        : (totalPoints == 0
+                        ? 0
+                        : (200 - totalPoints) / 200 < 0
+                        ? 1
+                        : (200 - totalPoints) / 200),
+                    redeemMessage: 'aijsaojdsioajiods', // Third card message
                   ),
                   RewardCard(
                     color: Colors.purple[400]!,
                     imagePath: 'assets/apple_logo.png', // Replace with your image path
                     rewardText: 'Amazon Gift Card - \$80',
-                    points: totalPoints == 0 ? 0 : (250 - totalPoints) / 250 < 0 ? 1 : (250 - totalPoints) / 250,
+                    points: totalPoints == 250
+                        ? 1
+                        : (totalPoints == 0
+                        ? 0
+                        : (250 - totalPoints) / 250 < 0
+                        ? 1
+                        : (250 - totalPoints) / 250),
+                    redeemMessage: 'asijfsajoiasisos', // Fourth card message
                   ),
                 ],
               ),
@@ -88,18 +116,27 @@ class RewardPage extends StatelessWidget {
   }
 }
 
-class RewardCard extends StatelessWidget {
+class RewardCard extends StatefulWidget {
   final Color color;
   final String imagePath;
   final String rewardText;
   final double points;
+  final String redeemMessage;
 
   const RewardCard({
     required this.color,
     required this.imagePath,
     required this.rewardText,
     required this.points,
+    required this.redeemMessage,
   });
+
+  @override
+  _RewardCardState createState() => _RewardCardState();
+}
+
+class _RewardCardState extends State<RewardCard> {
+  String? _redeemMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +145,7 @@ class RewardCard extends StatelessWidget {
       height: 200, // Adjusted height for shorter card
       margin: EdgeInsets.only(right: 16),
       decoration: BoxDecoration(
-        color: color,
+        color: widget.color,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
@@ -120,7 +157,7 @@ class RewardCard extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
               child: Image.asset(
-                imagePath,
+                widget.imagePath,
                 fit: BoxFit.cover, // Makes the image fill the top half
               ),
             ),
@@ -129,7 +166,7 @@ class RewardCard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: LinearProgressIndicator(
-              value: points,
+              value: widget.points,
               backgroundColor: Colors.white,
               color: Colors.orangeAccent,
             ),
@@ -143,7 +180,7 @@ class RewardCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    rewardText,
+                    widget.rewardText,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.white,
@@ -153,7 +190,12 @@ class RewardCard extends StatelessWidget {
                   ),
                   SizedBox(height: 5),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      setState(() {
+                        // Show the redeem message when button is clicked
+                        _redeemMessage = widget.redeemMessage;
+                      });
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
@@ -163,9 +205,20 @@ class RewardCard extends StatelessWidget {
                     ),
                     child: Text(
                       'Redeem',
-                      style: TextStyle(color: color),
+                      style: TextStyle(color: widget.color),
                     ),
                   ),
+                  SizedBox(height: 10),
+                  if (_redeemMessage != null)
+                    Text(
+                      _redeemMessage!,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
                 ],
               ),
             ),

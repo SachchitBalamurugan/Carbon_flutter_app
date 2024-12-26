@@ -31,10 +31,7 @@ class EmissionsSummaryWidget extends StatelessWidget {
       double emissions = doc['emissions']?.toDouble() ?? 0.0;
       DateTime timestamp = (doc['timestamp'] as Timestamp).toDate();
 
-      if (DateTime
-          .now()
-          .difference(timestamp)
-          .inDays == 0) {
+      if (DateTime.now().difference(timestamp).inDays == 0) {
         // Add to today's total
         todayEmissions += emissions;
       } else if (lastDate == null || timestamp.isBefore(lastDate)) {
@@ -69,14 +66,22 @@ class EmissionsSummaryWidget extends StatelessWidget {
         final double lastDateEmissions = snapshot.data!["lastDate"]!;
 
         return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 5.0),
+          padding: const EdgeInsets.symmetric(horizontal: 0),
           // Space on the sides
           child: Container(
             width: double.infinity, // Fill available width
             padding: const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
-              color: Colors.grey[200],
+              color: Colors.white,
               borderRadius: BorderRadius.circular(12.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 2,
+                  blurRadius: 6,
+                  offset: Offset(0, 3), // Changes the position of the shadow
+                ),
+              ],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,

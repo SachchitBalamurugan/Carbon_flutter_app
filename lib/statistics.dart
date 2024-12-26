@@ -316,7 +316,7 @@ class _Analyze extends State<Analyze> {
               ),
               const SizedBox(height: 8),
               const Text(
-                'Understand your impact.',
+                'Track Your Carbon Footprint.',
                 style: TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 20),

@@ -2,35 +2,38 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:untitled/statistics.dart';
+import 'package:untitled/todayBarGraph.dart';
+import 'barGraph.dart';
 import 'chart.dart';
 import 'firebase_options.dart';
 import 'package:fl_chart/fl_chart.dart';
+
+import 'home.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(const MaterialApp(
-    home: ActivityTracker(),
+    home: Analyze(),
   ));
 }
 
-class ActivityTracker extends StatefulWidget {
-  const ActivityTracker({Key? key}) : super(key: key);
+class Analyze extends StatefulWidget {
+  const Analyze({Key? key}) : super(key: key);
 
   @override
-  _ActivityTrackerState createState() => _ActivityTrackerState();
+  _Analyze createState() => _Analyze();
 }
 
-class _ActivityTrackerState extends State<ActivityTracker> {
+class _Analyze extends State<Analyze> {
   final List<Map<String, dynamic>> addedActivities = [];
   String username = ''; // Initially empty username
 
   // Variables for total points and emissions
   int totalPoints = 0;
   double totalEmissions = 0.0;
-  int _currentIndex = 0;
+  int _currentIndex = 1;
 
   // Define the screen widgets
   final List<Widget> _screens = [
@@ -83,8 +86,7 @@ class _ActivityTrackerState extends State<ActivityTracker> {
 
   // Function to get the username from Firestore
   Future<void> _getUsername() async {
-    User? user = FirebaseAuth.instance
-        .currentUser; // Get the current logged-in user
+    User? user = FirebaseAuth.instance.currentUser; // Get the current logged-in user
     if (user != null) {
       // Fetch the user's document from Firestore
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
@@ -94,8 +96,7 @@ class _ActivityTrackerState extends State<ActivityTracker> {
 
       if (userDoc.exists) {
         setState(() {
-          username = userDoc['name'] ??
-              'Username'; // Assuming 'name' is the field in Firestore
+          username = userDoc['name'] ?? 'Username'; // Assuming 'name' is the field in Firestore
         });
       } else {
         setState(() {
@@ -114,16 +115,14 @@ class _ActivityTrackerState extends State<ActivityTracker> {
           .collection('users') // Users collection
           .doc(user.uid) // The user's UID as the document ID
           .collection('activities') // Subcollection for activities
-          .orderBy(
-          'timestamp', descending: true) // Order activities by timestamp
+          .orderBy('timestamp', descending: true) // Order activities by timestamp
           .get();
 
       double totalEmissionsFromFirestore = 0.0;
 
       // Iterate over the fetched activities to sum emissions
       for (var doc in snapshot.docs) {
-        double emissions = doc['emissions']?.toDouble() ??
-            0.0; // Ensure it's a double
+        double emissions = doc['emissions']?.toDouble() ?? 0.0; // Ensure it's a double
         totalEmissionsFromFirestore += emissions;
       }
 
@@ -175,21 +174,18 @@ class _ActivityTrackerState extends State<ActivityTracker> {
                 children: [
                   // Category Dropdown
                   DropdownButtonFormField<String>(
-                    decoration: const InputDecoration(
-                        labelText: 'Select Category'),
+                    decoration: const InputDecoration(labelText: 'Select Category'),
                     value: selectedCategory,
                     items: categoryActivities.keys
-                        .map((category) =>
-                        DropdownMenuItem<String>(
-                          value: category,
-                          child: Text(category),
-                        ))
+                        .map((category) => DropdownMenuItem<String>(
+                      value: category,
+                      child: Text(category),
+                    ))
                         .toList(),
                     onChanged: (value) {
                       setState(() {
                         selectedCategory = value;
-                        _filterActivities(
-                            selectedCategory); // Update activities
+                        _filterActivities(selectedCategory); // Update activities
                       });
                       print('Selected category: $selectedCategory');
                     },
@@ -197,15 +193,13 @@ class _ActivityTrackerState extends State<ActivityTracker> {
                   const SizedBox(height: 10),
                   // Activity Dropdown (dynamic based on selected category)
                   DropdownButtonFormField<String>(
-                    decoration: const InputDecoration(
-                        labelText: 'Select Activity'),
+                    decoration: const InputDecoration(labelText: 'Select Activity'),
                     value: selectedActivity,
                     items: filteredActivities
-                        .map((activity) =>
-                        DropdownMenuItem<String>(
-                          value: activity['name'],
-                          child: Text(activity['name']),
-                        ))
+                        .map((activity) => DropdownMenuItem<String>(
+                      value: activity['name'],
+                      child: Text(activity['name']),
+                    ))
                         .toList(),
                     onChanged: (value) {
                       setState(() {
@@ -235,22 +229,19 @@ class _ActivityTrackerState extends State<ActivityTracker> {
                   onPressed: () async {
                     if (selectedActivity != null && quantity.isNotEmpty) {
                       final double totalEmissionsForActivity =
-                          emissions * double.parse(
-                              quantity); // Calculate total emissions
+                          emissions * double.parse(quantity); // Calculate total emissions
 
                       setState(() {
                         addedActivities.add({
                           'activity': selectedActivity,
                           'quantity': quantity,
-                          'emissions': totalEmissionsForActivity
-                              .toStringAsFixed(2),
+                          'emissions': totalEmissionsForActivity.toStringAsFixed(2),
                           'category': selectedCategory,
                           'color': _getCategoryColor(selectedCategory),
                         });
 
                         // Update total emissions
-                        totalEmissions +=
-                            totalEmissionsForActivity; // Add the emissions of the new activity
+                        totalEmissions += totalEmissionsForActivity; // Add the emissions of the new activity
                         totalPoints += 10; // Placeholder points per activity
                       });
 
@@ -260,15 +251,13 @@ class _ActivityTrackerState extends State<ActivityTracker> {
                         await FirebaseFirestore.instance
                             .collection('users') // Users collection
                             .doc(user.uid) // The user's UID as the document ID
-                            .collection(
-                            'activities') // Subcollection for activities
+                            .collection('activities') // Subcollection for activities
                             .add({
                           'activity': selectedActivity,
                           'quantity': quantity,
                           'emissions': totalEmissionsForActivity,
                           'category': selectedCategory,
-                          'timestamp': FieldValue.serverTimestamp(),
-                          // Save the current timestamp
+                          'timestamp': FieldValue.serverTimestamp(), // Save the current timestamp
                         });
                       }
 
@@ -309,8 +298,8 @@ class _ActivityTrackerState extends State<ActivityTracker> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _currentIndex == 0
-          ? SingleChildScrollView(
+
+      body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -318,7 +307,7 @@ class _ActivityTrackerState extends State<ActivityTracker> {
             children: [
               // Greeting and username
               Text(
-                'Good day, $username',
+                'Carbon Tracker Dashboard',
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -326,118 +315,29 @@ class _ActivityTrackerState extends State<ActivityTracker> {
               ),
               const SizedBox(height: 8),
               const Text(
-                'Explore your progress and eco-footprint for a sustainable future.',
+                'Understand your impact.',
                 style: TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 20),
               // Total Points and Emissions Saved
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                          'Earned Points', style: TextStyle(fontSize: 14)),
-                      Text(
-                        '$totalPoints',
-                        style: const TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                          'Emissions Saved', style: TextStyle(fontSize: 14)),
-                      Text(
-                        '$totalEmissions kg CO2',
-                        style: const TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              // Add Activity Button
-              ElevatedButton(
-                onPressed: _addActivity,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.lightGreenAccent[400],
-                ),
-                child: const Text('Add New Activity'),
-              ),
-              const SizedBox(height: 20),
-              // List of Activities
-              Container(
-                height: 300, // Set a fixed height for the scrollable space
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: addedActivities.map((activity) {
-                      return Card(
-                        margin: const EdgeInsets.symmetric(vertical: 8),
-                        elevation: 4,
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: _getCategoryColor(
-                                activity['category']),
-                            radius: 8,
-                          ),
-                          title: Text(activity['activity'] ?? ''),
-                          subtitle: Text(
-                            'Quantity: ${activity['quantity']} CO2 Emissions: ${activity['emissions']} kg',
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                          trailing: Text(
-                            activity['category'] ?? '',
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ),
+
               const Text(
-                'Daily Emission Usage',
+                'Total Emissions by Category',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
-              const EmissionChart(), // This will display the chart
+              const EmissionChartByCategory(), // This will display the chart
+              const Text(
+                'Today\'s Emissions by Category',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              const EmissionChartByCategory2(), // This will display the chart
             ],
           ),
         ),
-      )
-          : _screens[_currentIndex],
-      // Switch to another screen based on the index (for Analyze or other screens)
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        // Bind the index to the current selected screen
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index; // Update the index to navigate
-          });
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.analytics),
-            label: 'Analyze',
-          ),
-          // Add more items here if needed
-        ],
       ),
+
     );
   }
 }

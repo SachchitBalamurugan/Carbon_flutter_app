@@ -3,15 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
 
-class EmissionChartByCategory extends StatefulWidget {
-  const EmissionChartByCategory({Key? key}) : super(key: key);
+class EmissionChartByCategory2 extends StatefulWidget {
+  const EmissionChartByCategory2({Key? key}) : super(key: key);
 
   @override
-  _EmissionChartByCategoryState createState() =>
-      _EmissionChartByCategoryState();
+  _EmissionChartByCategory2State createState() => _EmissionChartByCategory2State();
 }
 
-class _EmissionChartByCategoryState extends State<EmissionChartByCategory> {
+class _EmissionChartByCategory2State extends State<EmissionChartByCategory2> {
   Map<String, double> categoryEmissions = {};
   double maxYValue = 0;
 
@@ -48,7 +47,6 @@ class _EmissionChartByCategoryState extends State<EmissionChartByCategory> {
       });
     }
   }
-
   String _wrapText(String text, int maxLength) {
     if (text.length <= maxLength) {
       return text;
@@ -58,8 +56,9 @@ class _EmissionChartByCategoryState extends State<EmissionChartByCategory> {
       int end = (i + maxLength < text.length) ? i + maxLength : text.length;
       chunks.add(text.substring(i, end));
     }
-    return chunks.join('\n');
+    return chunks.join('\n'); // Join chunks with newline characters
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -127,18 +126,16 @@ class _EmissionChartByCategoryState extends State<EmissionChartByCategory> {
                       showTitles: true,
                       getTitlesWidget: (value, meta) {
                         int index = value.toInt();
-                        if (index >= 0 &&
-                            index < categoryEmissions.keys.length) {
-                          String category =
-                          categoryEmissions.keys.elementAt(index);
-                          String wrappedCategory = _wrapText(category, 10);
+                        if (index >= 0 && index < categoryEmissions.keys.length) {
+                          String label = categoryEmissions.keys.elementAt(index);
+                          String wrappedLabel = _wrapText(label, 10); // Wrap text every 10 characters
                           return Padding(
                             padding: const EdgeInsets.only(top: 8.0),
                             child: Text(
-                              wrappedCategory,
+                              wrappedLabel,
                               style: const TextStyle(
                                 color: Colors.black87,
-                                fontSize: 12,
+                                fontSize: 10,
                               ),
                               textAlign: TextAlign.center,
                             ),

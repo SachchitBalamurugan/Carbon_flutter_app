@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'chart.dart';
 import 'firebase_options.dart';
-
+import 'package:fl_chart/fl_chart.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -296,7 +297,8 @@ class _ActivityTrackerState extends State<ActivityTracker> {
         ],
         backgroundColor: Colors.lightGreenAccent[400],
       ),
-      body: Padding(
+    body: SingleChildScrollView(
+    child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -315,7 +317,6 @@ class _ActivityTrackerState extends State<ActivityTracker> {
               style: TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 20),
-
             // Total Points and Emissions Saved
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -393,9 +394,16 @@ class _ActivityTrackerState extends State<ActivityTracker> {
                 ),
               ),
             ),
+            const Text(
+              'Daily Emission Usage',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            const EmissionChart(), // This will display the chart
           ],
         ),
       ),
+    ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 0,
         onTap: (index) {

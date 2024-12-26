@@ -190,12 +190,14 @@ class _RewardCardState extends State<RewardCard> {
                   ),
                   SizedBox(height: 5),
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: widget.points == 1
+                        ? () {
                       setState(() {
                         // Show the redeem message when button is clicked
                         _redeemMessage = widget.redeemMessage;
                       });
-                    },
+                    }
+                        : null, // Disable the button if points != 1
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
@@ -205,7 +207,9 @@ class _RewardCardState extends State<RewardCard> {
                     ),
                     child: Text(
                       'Redeem',
-                      style: TextStyle(color: widget.color),
+                      style: TextStyle(
+                        color: widget.points == 1 ? widget.color : Colors.grey, // Adjust color based on state
+                      ),
                     ),
                   ),
                   SizedBox(height: 10),

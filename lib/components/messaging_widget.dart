@@ -24,9 +24,7 @@ class MessageWidget extends StatelessWidget {
               margin: const EdgeInsets.only(bottom: 8),
               constraints: const BoxConstraints(maxWidth: 520),
               decoration: BoxDecoration(
-                color: isFromUser
-                    ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).colorScheme.secondary,
+                color: isFromUser ? Colors.green[300] : Colors.green[100],
                 borderRadius: BorderRadius.circular(18),
               ),
               child: Column(

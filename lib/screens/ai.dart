@@ -77,7 +77,15 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('AI Feedback'),
+        title: Flexible(
+          child: Text(
+            'AI Carbon Emission Strategy ChatBot',
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 18),
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -117,6 +125,18 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       controller: _textController,
                       onSubmitted: _sendChatMessage,
                     ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.send),
+                    color: Colors.blue,
+                    onPressed: _loading
+                        ? null
+                        : () {
+                      final inputText = _textController.text.trim();
+                      if (inputText.isNotEmpty) {
+                        _sendChatMessage(inputText);
+                      }
+                    },
                   ),
                 ],
               ),

@@ -79,14 +79,7 @@ class _EmissionChartByCategory2State extends State<EmissionChartByCategory2> {
       ),
       child: Column(
         children: [
-          const Text(
-            "Total Emissions by Category",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
+
           const SizedBox(height: 12),
           Expanded(
             child: BarChart(

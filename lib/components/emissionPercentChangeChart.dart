@@ -25,56 +25,48 @@ class _EmissionPercentChangeChartState extends State<EmissionPercentChangeChart>
   Future<void> _fetchCategoryEmissions() async {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      // Get current emissions (most recent timestamp)
-      QuerySnapshot currentSnapshot = await FirebaseFirestore.instance
+      // Fetch activities for the current user, ordered by timestamp
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
           .collection('activities')
           .orderBy('timestamp', descending: true)
           .get();
 
-      // Get previous emissions (timestamp before current one)
-      QuerySnapshot previousSnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .collection('activities')
-          .orderBy('timestamp', descending: false)
-          .get();
-
       Map<String, double> currentEmissions = {};
       Map<String, double> previousEmissions = {};
 
-      // Aggregating current emissions data by category
-      print("Current Emissions Data:");
-      for (var doc in currentSnapshot.docs) {
-        String category = doc['category'] ?? 'Unknown';
-        double emissions = double.tryParse(doc['emissions'].toString()) ?? 0.0;
-        currentEmissions[category] = (currentEmissions[category] ?? 0.0) + emissions;  // Aggregate values
-        print("Category: $category, Emissions: $emissions, Aggregated Emissions: ${currentEmissions[category]}");
-      }
+      if (snapshot.docs.isNotEmpty) {
+        DateTime mostRecentTimestamp = (snapshot.docs[0]['timestamp'] as Timestamp).toDate();
 
-      // Aggregating previous emissions data by category
-      print("Previous Emissions Data:");
-      for (var doc in previousSnapshot.docs) {
-        String category = doc['category'] ?? 'Unknown';
-        double emissions = double.tryParse(doc['emissions'].toString()) ?? 0.0;
-        previousEmissions[category] = (previousEmissions[category] ?? 0.0) + emissions;  // Aggregate values
-        print("Category: $category, Emissions: $emissions, Aggregated Emissions: ${previousEmissions[category]}");
+        // Calculate today's total emissions by category
+        DateTime today = DateTime.now();
+        DateTime previousDay = mostRecentTimestamp.subtract(Duration(days: 1));
+
+        snapshot.docs.forEach((doc) {
+          DateTime timestamp = (doc['timestamp'] as Timestamp).toDate();
+          String category = doc['category'] ?? 'Unknown';
+          double emissions = (doc['emissions'] as num?)?.toDouble() ?? 0.0;
+
+          if (timestamp.day == today.day && timestamp.month == today.month && timestamp.year == today.year) {
+            currentEmissions[category] = (currentEmissions[category] ?? 0) + emissions;
+          } else if (timestamp.day == previousDay.day && timestamp.month == previousDay.month && timestamp.year == previousDay.year) {
+            previousEmissions[category] = (previousEmissions[category] ?? 0) + emissions;
+          }
+        });
       }
 
       // Calculate percent change for each category
       Map<String, double> percentChange = {};
-      print("Percent Change Calculations:");
       currentEmissions.forEach((category, currentEmission) {
         double previousEmission = previousEmissions[category] ?? 0.0;
         double percentChangeValue = 0.0;
-
+        print("current em $currentEmission previous em $previousEmission");
         if (previousEmission != 0.0) {
           percentChangeValue = ((currentEmission - previousEmission) / previousEmission) * 100;
         }
 
         percentChange[category] = percentChangeValue;
-        print("Category: $category, Current Emissions: $currentEmission, Previous Emissions: $previousEmission, Percent Change: $percentChangeValue");
       });
 
       setState(() {
@@ -85,10 +77,6 @@ class _EmissionPercentChangeChartState extends State<EmissionPercentChangeChart>
             ? percentChange.values.reduce((a, b) => a > b ? a : b) + 50
             : 100;
       });
-
-      // Log the final results
-      print("Final Percent Change Data: $percentChangeByCategory");
-      print("Max Y Value: $maxYValue");
     }
   }
 

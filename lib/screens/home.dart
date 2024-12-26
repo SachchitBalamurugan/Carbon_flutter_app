@@ -7,6 +7,8 @@ import 'package:untitled/screens/statistics.dart';
 import '../components/chart.dart';
 import '../firebase_options.dart';
 import 'package:fl_chart/fl_chart.dart';
+
+import 'ai.dart';
 int totalPoints = 0;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,7 +40,8 @@ class _ActivityTrackerState extends State<ActivityTracker> {
   final List<Widget> _screens = [
     ActivityTracker(),
     Analyze(),
-    RewardPageApp()
+    RewardPageApp(),
+    FeedbackScreen()
     // You can define your Settings widget here
   ];
 
@@ -449,9 +452,17 @@ class _ActivityTrackerState extends State<ActivityTracker> {
             icon: Icon(Icons.stars_rounded),
             label: 'Rewards',
           ),
-          // Add more items here if needed
+          BottomNavigationBarItem(
+            icon: Icon(Icons.rocket_launch),
+            label: 'AI',
+          ),
         ],
-      ),
+        selectedItemColor: Colors.greenAccent, // Color of the icon and label when selected
+        unselectedItemColor: Colors.blueGrey, // Color of the icon and label when unselected
+        showUnselectedLabels: true, // Show unselected labels
+        selectedLabelStyle: TextStyle(color: Colors.greenAccent), // Set label color when selected
+        unselectedLabelStyle: TextStyle(color: Colors.blueGrey), // Set label color when unselected
+      )
     );
   }
 }

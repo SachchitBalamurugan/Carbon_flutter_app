@@ -64,6 +64,11 @@ class EmissionsSummaryWidget extends StatelessWidget {
 
         final double todayEmissions = snapshot.data!["today"]!;
         final double lastDateEmissions = snapshot.data!["lastDate"]!;
+        double percentChange = 0.0;
+
+        if (lastDateEmissions > 0) {
+          percentChange = ((todayEmissions - lastDateEmissions) / lastDateEmissions) * 100;
+        }
 
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 0),
@@ -104,6 +109,19 @@ class EmissionsSummaryWidget extends StatelessWidget {
                 Text(
                   "${lastDateEmissions.toStringAsFixed(2)} kg CO2",
                   style: const TextStyle(fontSize: 18, color: Colors.black87),
+                ),
+                const SizedBox(height: 16.0),
+                Text(
+                  "Percent Change in Emissions",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8.0),
+                Text(
+                  "${percentChange.toStringAsFixed(2)}%",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: percentChange >= 0 ? Colors.red : Colors.green,
+                  ),
                 ),
               ],
             ),

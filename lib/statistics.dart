@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:untitled/components/todayBarGraph.dart';
 import 'components/barGraph.dart';
 import 'components/chart.dart';
+import 'components/emissionPercentChangeChart.dart';
 import 'components/totalEmissionDay.dart';
 import 'firebase_options.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -335,6 +336,12 @@ class _Analyze extends State<Analyze> {
               ),
               const SizedBox(height: 10),
               const EmissionChartByCategory2(), // This will display the chart
+              const Text(
+                'Percent Change From Last Time Emissions by Category',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              const EmissionPercentChangeChart(), // This will display the chart
             ],
           ),
         ),

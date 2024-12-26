@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Instagram-like App',
+      title: 'Community',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -127,7 +127,7 @@ class _PostsScreenState extends State<PostsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Instagram-like Posts'),
+        title: Text('Community'),
       ),
       body: Column(
         children: [

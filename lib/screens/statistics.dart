@@ -35,7 +35,6 @@ class _Analyze extends State<Analyze> {
   // Variables for total points and emissions
   int totalPoints = 0;
   double totalEmissions = 0.0;
-
   int _currentIndex = 1;
 
   // Define the screen widgets

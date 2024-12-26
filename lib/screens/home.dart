@@ -11,6 +11,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'ai.dart';
 import 'community.dart';
 int totalPoints = 0;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -82,6 +83,7 @@ class _ActivityTrackerState extends State<ActivityTracker> {
   List<Map<String, dynamic>> filteredActivities = [];
   double emissions = 0.0;
 
+
   @override
   void initState() {
     super.initState();
@@ -128,41 +130,129 @@ class _ActivityTrackerState extends State<ActivityTracker> {
             .get();
 
         double totalEmissionsFromFirestore = 0.0;
+        double lastDayEmissions = 0.0;
+        double todayEmissions = 0.0;
 
-        // Iterate over the fetched activities and sum emissions
-        for (var doc in snapshot.docs) {
-          // Ensure emissions is a double and handle null values
-          double emissions = (doc['emissions'] as num?)?.toDouble() ?? 0.0;
-          totalEmissionsFromFirestore += emissions;
+        if (snapshot.docs.isNotEmpty) {
+          DateTime mostRecentTimestamp = (snapshot.docs[0]['timestamp'] as Timestamp).toDate();
+
+          // Calculate today's total emissions
+          snapshot.docs.forEach((doc) {
+            DateTime timestamp = (doc['timestamp'] as Timestamp).toDate();
+            if (timestamp.day == mostRecentTimestamp.day &&
+                timestamp.month == mostRecentTimestamp.month &&
+                timestamp.year == mostRecentTimestamp.year) {
+              double emissions = (doc['emissions'] as num?)?.toDouble() ?? 0.0;
+              todayEmissions += emissions;
+            }
+          });
+
+          // Calculate emissions from the previous day
+          DateTime previousDay = mostRecentTimestamp.subtract(Duration(days: 1));
+          snapshot.docs.forEach((doc) {
+            DateTime timestamp = (doc['timestamp'] as Timestamp).toDate();
+            if (timestamp.day == previousDay.day &&
+                timestamp.month == previousDay.month &&
+                timestamp.year == previousDay.year) {
+              double emissions = (doc['emissions'] as num?)?.toDouble() ?? 0.0;
+              lastDayEmissions += emissions;
+            }
+          });
+
+          // Sum up total emissions from Firestore
+          snapshot.docs.forEach((doc) {
+            double emissions = (doc['emissions'] as num?)?.toDouble() ?? 0.0;
+            totalEmissionsFromFirestore += emissions;
+          });
         }
 
-        // Print the total emissions to the console
         print("Total emissions: $totalEmissionsFromFirestore kg CO2");
 
-        // Update the state with the fetched activities and total emissions
         setState(() {
           addedActivities.clear();
           addedActivities.addAll(snapshot.docs.map((doc) {
             return {
-              'activity': doc['activity'] ?? 'Unknown Activity', // Default to 'Unknown Activity' if null
-              'quantity': doc['quantity'] ?? 0, // Default to 0 if null
-              'emissions': doc['emissions']?.toString() ?? '0.0', // Default to '0.0' if emissions is null
-              'category': doc['category'] ?? 'Uncategorized', // Default to 'Uncategorized' if null
+              'activity': doc['activity'] ?? 'Unknown Activity',
+              'quantity': doc['quantity'] ?? 0,
+              'emissions': doc['emissions']?.toString() ?? '0.0',
+              'category': doc['category'] ?? 'Uncategorized',
             };
           }).toList());
 
-          // Update the total emissions value in the UI
           totalEmissions = totalEmissionsFromFirestore;
+
+          double difference = todayEmissions - lastDayEmissions;
+          double percentChange = ((difference / lastDayEmissions) * 100) * -1;
+
+          totalPoints = percentChange.toInt();
+
+          print("Percent Change: $percentChange% today $todayEmissions last $lastDayEmissions");
+
+          // Check if we already have data for today in Firestore
+          FirebaseFirestore.instance
+              .collection('users') // Users collection
+              .doc(user.uid) // The user's UID as the document ID
+              .collection('points') // Subcollection for points
+              .where('timestamp', isGreaterThanOrEqualTo: DateTime.now().toUtc().subtract(Duration(days: 1))) // Check for points within the last 24 hours
+              .get()
+              .then((snapshot) {
+            if (snapshot.docs.isEmpty) {
+              // No points for today, save the new data and update totalPoints
+              FirebaseFirestore.instance
+                  .collection('users') // Users collection
+                  .doc(user.uid) // The user's UID as the document ID
+                  .collection('points') // Subcollection for points
+                  .doc('current') // Store under 'current' document
+                  .set({
+                'percentChange': percentChange,
+                'lastDayEmissions': lastDayEmissions,
+                'todayEmissions': todayEmissions,
+                'timestamp': FieldValue.serverTimestamp(),
+              });
+
+              // Add the new percentChange to totalPoints
+              totalPoints += percentChange.toInt();
+            } else {
+              // Points for today already exist, fetch the existing data
+              double storedPercentChange = snapshot.docs[0]['percentChange']?.toDouble() ?? 0.0;
+              DateTime storedTimestamp = (snapshot.docs[0]['timestamp'] as Timestamp).toDate();
+
+              // If the stored data is from today, update it
+              if (storedTimestamp.day == DateTime.now().day) {
+                FirebaseFirestore.instance
+                    .collection('users') // Users collection
+                    .doc(user.uid) // The user's UID as the document ID
+                    .collection('points') // Subcollection for points
+                    .doc('current') // Store under 'current' document
+                    .set({
+                  'percentChange': percentChange,
+                  'lastDayEmissions': lastDayEmissions,
+                  'todayEmissions': todayEmissions,
+                  'timestamp': FieldValue.serverTimestamp(),
+                });
+
+                // Add the new percentChange to totalPoints
+                totalPoints += percentChange.toInt();
+              } else {
+                // If the stored percentChange is higher, keep the existing one
+                if (storedPercentChange > percentChange) {
+                  totalPoints += storedPercentChange.toInt();
+                } else {
+                  totalPoints += percentChange.toInt();
+                }
+              }
+            }
+          });
         });
       } catch (e) {
-        // Handle any errors that may occur during the fetch operation
         print("Error fetching activities: $e");
       }
     } else {
-      // Handle the case where the user is not logged in
       print("No user is currently logged in.");
     }
   }
+
+
   // Function to filter activities based on the selected category
   void _filterActivities(String? category) {
     if (category != null && categoryActivities.containsKey(category)) {

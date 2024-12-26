@@ -27,16 +27,24 @@ class _EmissionChartByCategory2State extends State<EmissionChartByCategory2> {
           .collection('users')
           .doc(user.uid)
           .collection('activities')
+          .orderBy('timestamp', descending: true)
           .get();
 
       Map<String, double> emissionsByCategory = {};
 
-      for (var doc in snapshot.docs) {
-        String category = doc['category'] ?? 'Unknown';
-        double emissions = double.tryParse(doc['emissions'].toString()) ?? 0.0;
+      DateTime now = DateTime.now();
 
-        emissionsByCategory[category] =
-            (emissionsByCategory[category] ?? 0) + emissions;
+      for (var doc in snapshot.docs) {
+        DateTime timestamp = (doc['timestamp'] as Timestamp).toDate();
+        if (timestamp.day == now.day &&
+            timestamp.month == now.month &&
+            timestamp.year == now.year) {
+          String category = doc['category'] ?? 'Unknown';
+          double emissions = double.tryParse(doc['emissions'].toString()) ?? 0.0;
+
+          emissionsByCategory[category] =
+              (emissionsByCategory[category] ?? 0) + emissions;
+        }
       }
 
       setState(() {
@@ -47,6 +55,7 @@ class _EmissionChartByCategory2State extends State<EmissionChartByCategory2> {
       });
     }
   }
+
   String _wrapText(String text, int maxLength) {
     if (text.length <= maxLength) {
       return text;
@@ -58,7 +67,6 @@ class _EmissionChartByCategory2State extends State<EmissionChartByCategory2> {
     }
     return chunks.join('\n'); // Join chunks with newline characters
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +87,6 @@ class _EmissionChartByCategory2State extends State<EmissionChartByCategory2> {
       ),
       child: Column(
         children: [
-
           const SizedBox(height: 12),
           Expanded(
             child: BarChart(

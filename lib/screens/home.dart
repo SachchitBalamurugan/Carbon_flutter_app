@@ -9,6 +9,7 @@ import '../firebase_options.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 import 'ai.dart';
+import 'community.dart';
 int totalPoints = 0;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,7 +42,8 @@ class _ActivityTrackerState extends State<ActivityTracker> {
     ActivityTracker(),
     Analyze(),
     RewardPageApp(),
-    FeedbackScreen()
+    FeedbackScreen(),
+    PostsScreen()
     // You can define your Settings widget here
   ];
 
@@ -455,6 +457,10 @@ class _ActivityTrackerState extends State<ActivityTracker> {
           BottomNavigationBarItem(
             icon: Icon(Icons.rocket_launch),
             label: 'AI',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat),
+            label: 'Community',
           ),
         ],
         selectedItemColor: Colors.greenAccent, // Color of the icon and label when selected

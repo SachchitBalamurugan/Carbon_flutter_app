@@ -64,19 +64,19 @@ class RewardPage extends StatelessWidget {
                     color: Colors.blue[400]!,
                     imagePath: 'assets/apple_logo.png', // Replace with your image path
                     rewardText: 'Amazon Gift Card - \$40',
-                    points: totalPoints == 0 ? 0 : (100 - totalPoints) / 100 < 0 ? 1 : (100 - totalPoints) / 100,
+                    points: totalPoints == 0 ? 0 : (150 - totalPoints) / 150 < 0 ? 1 : (150 - totalPoints) / 150,
                   ),
                   RewardCard(
                     color: Colors.green[400]!,
                     imagePath: 'assets/apple_logo.png', // Replace with your image path
                     rewardText: 'Amazon Gift Card - \$60',
-                    points: totalPoints == 0 ? 0 : (100 - totalPoints) / 100 < 0 ? 1 : (100 - totalPoints) / 100,
+                    points: totalPoints == 0 ? 0 : (200 - totalPoints) / 200 < 0 ? 1 : (200 - totalPoints) / 200,
                   ),
                   RewardCard(
                     color: Colors.purple[400]!,
                     imagePath: 'assets/apple_logo.png', // Replace with your image path
                     rewardText: 'Amazon Gift Card - \$80',
-                    points: totalPoints == 0 ? 0 : (100 - totalPoints) / 100 < 0 ? 1 : (100 - totalPoints) / 100,
+                    points: totalPoints == 0 ? 0 : (250 - totalPoints) / 250 < 0 ? 1 : (250 - totalPoints) / 250,
                   ),
                 ],
               ),

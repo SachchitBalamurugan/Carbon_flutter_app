@@ -41,7 +41,7 @@ class RewardPage extends StatelessWidget {
             Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                'Choose one of these rewards',
+                'Earn Points to Earn More Rewards!',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w400,

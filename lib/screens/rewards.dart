@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:untitled/screens/home.dart';
 
 void main() {
   runApp(RewardPageApp());
@@ -16,6 +19,7 @@ class RewardPageApp extends StatelessWidget {
 
 class RewardPage extends StatelessWidget {
   int _currentIndex = 2;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,25 +58,25 @@ class RewardPage extends StatelessWidget {
                     color: Colors.red[400]!,
                     imagePath: 'assets/apple_logo.png', // Replace with your image path
                     rewardText: 'Amazon Gift Card - \$20',
-                    points: '100 Points',
+                    points: totalPoints == 0 ? 0 : (100 - totalPoints) / 100 < 0 ? 1 : (100 - totalPoints) / 100,
                   ),
                   RewardCard(
                     color: Colors.blue[400]!,
                     imagePath: 'assets/apple_logo.png', // Replace with your image path
                     rewardText: 'Amazon Gift Card - \$40',
-                    points: '150 Points',
+                    points: totalPoints == 0 ? 0 : (100 - totalPoints) / 100 < 0 ? 1 : (100 - totalPoints) / 100,
                   ),
                   RewardCard(
                     color: Colors.green[400]!,
                     imagePath: 'assets/apple_logo.png', // Replace with your image path
                     rewardText: 'Amazon Gift Card - \$60',
-                    points: '200 Points',
+                    points: totalPoints == 0 ? 0 : (100 - totalPoints) / 100 < 0 ? 1 : (100 - totalPoints) / 100,
                   ),
                   RewardCard(
                     color: Colors.purple[400]!,
                     imagePath: 'assets/apple_logo.png', // Replace with your image path
                     rewardText: 'Amazon Gift Card - \$80',
-                    points: '80 Points',
+                    points: totalPoints == 0 ? 0 : (100 - totalPoints) / 100 < 0 ? 1 : (100 - totalPoints) / 100,
                   ),
                 ],
               ),
@@ -88,7 +92,7 @@ class RewardCard extends StatelessWidget {
   final Color color;
   final String imagePath;
   final String rewardText;
-  final String points;
+  final double points;
 
   const RewardCard({
     required this.color,
@@ -101,7 +105,7 @@ class RewardCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 360, // Adjusted width for smaller card
-      height: 100, // Adjusted height for shorter card
+      height: 200, // Adjusted height for shorter card
       margin: EdgeInsets.only(right: 16),
       decoration: BoxDecoration(
         color: color,
@@ -121,6 +125,15 @@ class RewardCard extends StatelessWidget {
               ),
             ),
           ),
+          SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: LinearProgressIndicator(
+              value: points,
+              backgroundColor: Colors.white,
+              color: Colors.orangeAccent,
+            ),
+          ),
           // Bottom half with the details
           Expanded(
             flex: 1,
@@ -134,19 +147,11 @@ class RewardCard extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 24,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   SizedBox(height: 5),
-                  Text(
-                    points,
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 22,
-                    ),
-                  ),
-                  SizedBox(height: 8),
                   ElevatedButton(
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(

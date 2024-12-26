@@ -7,6 +7,7 @@ import 'package:untitled/screens/statistics.dart';
 import '../components/chart.dart';
 import '../firebase_options.dart';
 import 'package:fl_chart/fl_chart.dart';
+int totalPoints = 0;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -29,7 +30,7 @@ class _ActivityTrackerState extends State<ActivityTracker> {
   String username = ''; // Initially empty username
 
   // Variables for total points and emissions
-  int totalPoints = 0;
+
   double totalEmissions = 0.0;
   int _currentIndex = 0;
 

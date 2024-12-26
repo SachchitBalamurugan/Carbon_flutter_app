@@ -22,8 +22,44 @@ class EmissionsSummaryWidget extends StatelessWidget {
     if (snapshot.docs.isEmpty) {
       return {"today": 0.0, "lastDate": 0.0};
     }
+    double lastDayEmissions = 0.0;
+    double todayEmissions2 = 0.0;
+    double totalEmissionsFromFirestore = 0.0;
 
-    double todayEmissions = 0.0;
+    if (snapshot.docs.isNotEmpty) {
+      DateTime mostRecentTimestamp = (snapshot.docs[0]['timestamp'] as Timestamp).toDate();
+
+      // Calculate today's total emissions
+      snapshot.docs.forEach((doc) {
+        DateTime timestamp = (doc['timestamp'] as Timestamp).toDate();
+        if (timestamp.day == mostRecentTimestamp.day &&
+            timestamp.month == mostRecentTimestamp.month &&
+            timestamp.year == mostRecentTimestamp.year) {
+          double emissions = (doc['emissions'] as num?)?.toDouble() ?? 0.0;
+          todayEmissions2 += emissions;
+        }
+      });
+
+      // Calculate emissions from the previous day
+      DateTime previousDay = mostRecentTimestamp.subtract(Duration(days: 1));
+      snapshot.docs.forEach((doc) {
+        DateTime timestamp = (doc['timestamp'] as Timestamp).toDate();
+        if (timestamp.day == previousDay.day &&
+            timestamp.month == previousDay.month &&
+            timestamp.year == previousDay.year) {
+          double emissions = (doc['emissions'] as num?)?.toDouble() ?? 0.0;
+          lastDayEmissions += emissions;
+        }
+      });
+
+      // Sum up total emissions from Firestore
+      snapshot.docs.forEach((doc) {
+        double emissions = (doc['emissions'] as num?)?.toDouble() ?? 0.0;
+        totalEmissionsFromFirestore += emissions;
+      });
+    }
+
+    // double todayEmissions = 0.0;
     double lastDateEmissions = 0.0;
     DateTime? lastDate;
 
@@ -33,7 +69,7 @@ class EmissionsSummaryWidget extends StatelessWidget {
 
       if (DateTime.now().difference(timestamp).inDays == 0) {
         // Add to today's total
-        todayEmissions += emissions;
+        //todayEmissions += emissions;
       } else if (lastDate == null || timestamp.isBefore(lastDate)) {
         // Update the last date's emissions if it's the first or earlier date
         lastDateEmissions = emissions;
@@ -41,7 +77,7 @@ class EmissionsSummaryWidget extends StatelessWidget {
       }
     }
 
-    return {"today": todayEmissions, "lastDate": lastDateEmissions};
+    return {"today": todayEmissions2, "lastDate": lastDayEmissions};
   }
 
   @override

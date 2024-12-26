@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:untitled/todayBarGraph.dart';
-import 'barGraph.dart';
-import 'chart.dart';
+import 'package:untitled/components/todayBarGraph.dart';
+import 'components/barGraph.dart';
+import 'components/chart.dart';
+import 'components/totalEmissionDay.dart';
 import 'firebase_options.dart';
 import 'package:fl_chart/fl_chart.dart';
 
@@ -319,6 +320,7 @@ class _Analyze extends State<Analyze> {
                 style: TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 20),
+              const EmissionsSummaryWidget(),
               // Total Points and Emissions Saved
 
               const Text(

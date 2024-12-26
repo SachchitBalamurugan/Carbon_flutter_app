@@ -3,7 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:untitled/statistics.dart';
-import 'chart.dart';
+import 'components/chart.dart';
 import 'firebase_options.dart';
 import 'package:fl_chart/fl_chart.dart';
 void main() async {

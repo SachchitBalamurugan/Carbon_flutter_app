@@ -19,7 +19,6 @@ class RewardPageApp extends StatelessWidget {
 
 class RewardPage extends StatelessWidget {
   int _currentIndex = 2;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,52 +57,53 @@ class RewardPage extends StatelessWidget {
                     color: Colors.red[400]!,
                     imagePath: 'assets/apple_logo.png', // Replace with your image path
                     rewardText: 'Amazon Gift Card - \$20',
-                    points: totalPoints == 100
+                    points: totalPoints == 1000
                         ? 1
                         : (totalPoints == 0
                         ? 0
-                        : (100 - totalPoints) / 100 < 0
+                        : 1-((1000 - totalPoints) / 1000) < 0
                         ? 1
-                        : (100 - totalPoints) / 100),
-                    redeemMessage: 'dasajsadksal', // First card message
+                        : 1- ((1000 - totalPoints) / 1000)),
+
+        redeemMessage: 'dasajsadksal', // First card message
                   ),
                   RewardCard(
                     color: Colors.blue[400]!,
                     imagePath: 'assets/apple_logo.png', // Replace with your image path
                     rewardText: 'Amazon Gift Card - \$40',
-                    points: totalPoints == 150
+                    points: totalPoints == 15000
                         ? 1
                         : (totalPoints == 0
                         ? 0
-                        : (150 - totalPoints) / 150 < 0
+                        : 1- ((15000 - totalPoints) / 15000) < 0
                         ? 1
-                        : (150 - totalPoints) / 150),
+                        : 1-((15000 - totalPoints)) / 15000),
                     redeemMessage: 'jsasijfasioasfijo', // Second card message
                   ),
                   RewardCard(
                     color: Colors.green[400]!,
                     imagePath: 'assets/apple_logo.png', // Replace with your image path
                     rewardText: 'Amazon Gift Card - \$60',
-                    points: totalPoints == 200
+                    points: totalPoints == 20000
                         ? 1
                         : (totalPoints == 0
                         ? 0
-                        : (200 - totalPoints) / 200 < 0
+                        : 1- ((20000 - totalPoints) / 20000) < 0
                         ? 1
-                        : (200 - totalPoints) / 200),
+                        : 1-((20000 - totalPoints)) / 20000),
                     redeemMessage: 'aijsaojdsioajiods', // Third card message
                   ),
                   RewardCard(
                     color: Colors.purple[400]!,
                     imagePath: 'assets/apple_logo.png', // Replace with your image path
                     rewardText: 'Amazon Gift Card - \$80',
-                    points: totalPoints == 250
+                    points: totalPoints == 20000
                         ? 1
                         : (totalPoints == 0
                         ? 0
-                        : (250 - totalPoints) / 250 < 0
+                        : 1- ((20000 - totalPoints) / 20000) < 0
                         ? 1
-                        : (250 - totalPoints) / 250),
+                        : 1-((20000 - totalPoints)) / 20000),
                     redeemMessage: 'asijfsajoiasisos', // Fourth card message
                   ),
                 ],

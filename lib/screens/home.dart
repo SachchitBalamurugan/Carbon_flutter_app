@@ -635,7 +635,7 @@ class _ActivityTrackerState extends State<ActivityTracker> {
             pointsSnapshot.docs.forEach((doc) {
               var percentChangeValue = doc['percentChange'];
               if (percentChangeValue != null) {
-                totalPoints += (percentChangeValue as num).toDouble().toInt();
+                totalPoints = (percentChangeValue as num).toDouble().toInt(); // += i might mess up
               }
             });
 

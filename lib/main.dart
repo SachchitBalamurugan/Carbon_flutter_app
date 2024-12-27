@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
           900: Color(0xE65CFB24),
         }),
       ),
-      home: SignUpScreen(),
+      home: LoginScreen(),
     );
   }
 }
@@ -87,7 +87,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF5CFB24).withOpacity(0.05),
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
@@ -225,7 +225,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF5CFB24).withOpacity(0.05),
+        backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20.0),

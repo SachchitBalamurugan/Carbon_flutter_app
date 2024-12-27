@@ -8,6 +8,7 @@ import '../components/chart.dart';
 import '../firebase_options.dart';
 import 'package:fl_chart/fl_chart.dart';
 
+import '../main.dart';
 import 'ai.dart';
 import 'community.dart';
 import 'communityJOIN.dart';
@@ -824,7 +825,7 @@ class _ActivityTrackerState extends State<ActivityTracker> {
               fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
-          ), // Removed const to allow variable interpolation
+          ),
           actions: [
             IconButton(
               icon: const Icon(Icons.leaderboard),
@@ -843,6 +844,20 @@ class _ActivityTrackerState extends State<ActivityTracker> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => CommunityScreen()),
+                );
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.exit_to_app),  // Logout icon
+              tooltip: 'Logout',
+              onPressed: () async {
+                // Sign out the user from Firebase
+                await FirebaseAuth.instance.signOut();
+
+                // After signing out, navigate back to the login screen
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginScreen()),
                 );
               },
             ),

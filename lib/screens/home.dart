@@ -10,6 +10,7 @@ import 'package:fl_chart/fl_chart.dart';
 
 import 'ai.dart';
 import 'community.dart';
+import 'leaderboard.dart';
 int totalPoints = 0;
 
 void main() async {
@@ -261,7 +262,6 @@ class _ActivityTrackerState extends State<ActivityTracker> {
       {'name': 'Using a hot water heater (per hour)', 'emissions': 2.0},
       {'name': 'Using a clothes dryer (per load)', 'emissions': 2.0},
       {'name': 'Using an oven (per hour)', 'emissions': 1.5},
-      {'name': 'Using a dishwasher (per load)', 'emissions': 1.2},
       {'name': 'Using a microwave (per minute)', 'emissions': 0.02},
       {'name': 'Using a refrigerator (per day)', 'emissions': 1.0},
       {'name': 'Using a freezer (per day)', 'emissions': 1.5},
@@ -735,7 +735,7 @@ class _ActivityTrackerState extends State<ActivityTracker> {
                         // Update total emissions
                         totalEmissions +=
                             totalEmissionsForActivity; // Add the emissions of the new activity
-                        totalPoints += 10; // Placeholder points per activity
+                        //totalPoints += 10; // Placeholder points per activity
                       });
 
                       // Save activity to Firestore under the current user's document
@@ -793,7 +793,29 @@ class _ActivityTrackerState extends State<ActivityTracker> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _currentIndex == 0
+        appBar: AppBar(
+          title: Text(
+            'Good day, $username',
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ), // Removed const to allow variable interpolation
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.leaderboard),
+              tooltip: 'Leaderboard',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => LeaderboardApp()),
+                );
+              },
+            ),
+          ],
+        ),
+
+        body: _currentIndex == 0
           ? SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -801,13 +823,7 @@ class _ActivityTrackerState extends State<ActivityTracker> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Greeting and username
-              Text(
-                'Good day, $username',
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+
               const SizedBox(height: 8),
               const Text(
                 'Explore your progress and eco-footprint for a sustainable future.',

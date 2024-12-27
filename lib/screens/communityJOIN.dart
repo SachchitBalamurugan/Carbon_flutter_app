@@ -143,6 +143,33 @@ class _CommunityScreenState extends State<CommunityScreen> {
     }
   }
 
+  // Calculate total emissions for each user in the community and display a leaderboard
+  Future<List<Map<String, dynamic>>> calculateLeaderboard(String communityId) async {
+    try {
+      DocumentSnapshot communityDoc = await _firestore.collection('communities').doc(communityId).get();
+      List members = communityDoc['members'];
+
+      List<Map<String, dynamic>> leaderboard = [];
+
+      for (var userId in members) {
+        double totalEmissions = await calculateTotalEmissions(userId);
+        DocumentSnapshot userDoc = await _firestore.collection('users').doc(userId).get();
+        String userName = userDoc['name'] ?? 'Unnamed User';
+        leaderboard.add({
+          'name': userName,
+          'emissions': totalEmissions,
+        });
+      }
+
+      leaderboard.sort((a, b) => b['emissions'].compareTo(a['emissions'])); // Sort descending by emissions
+      return leaderboard;
+    } catch (e) {
+      print('Error calculating leaderboard for community $communityId: $e');
+      return [];
+    }
+  }
+
+// Modify the showCommunityDetails method to include leaderboard view
   Future<void> showCommunityDetails(String communityId, String communityName) async {
     try {
       DocumentSnapshot communityDoc =
@@ -150,57 +177,51 @@ class _CommunityScreenState extends State<CommunityScreen> {
 
       List members = communityDoc['members'];
 
+      // Fetch user data and calculate emissions for each user
+      List<Map<String, dynamic>> userEmissions = [];
+      for (var userId in members) {
+        try {
+          DocumentSnapshot userDoc =
+          await _firestore.collection('users').doc(userId).get();
+          String userName = userDoc['name'] ?? 'Unnamed User';
+          double emissions = await calculateTotalEmissions(userId);
+          userEmissions.add({
+            'name': userName,
+            'emissions': emissions,
+          });
+        } catch (e) {
+          print('Error fetching member data for $userId: $e');
+        }
+      }
+
+      // Sort by emissions in ascending order (least emissions first)
+      userEmissions.sort((a, b) => a['emissions'].compareTo(b['emissions']));
+
       showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text('$communityName Members'),
-            content: members.isEmpty
+            title: Text('$communityName Leaderboard'),
+            content: userEmissions.isEmpty
                 ? Text('No members in this community.')
-                : FutureBuilder<List<String>>(
-              future: Future.wait(members.map((userId) async {
-                try {
-                  DocumentSnapshot userDoc =
-                  await _firestore.collection('users').doc(userId).get();
-                  String userName = userDoc['name'] ?? 'Unnamed User';
-                  double emissions = await calculateTotalEmissions(userId);
-                  return '$userName: ${emissions.toStringAsFixed(2)} kg';
-                } catch (e) {
-                  print('Error fetching member data: $e');
-                  return 'Unknown User: 0.00 kg';
-                }
-              }).toList()),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return SizedBox(
-                    height: 100,
-                    child: Center(child: CircularProgressIndicator()),
-                  );
-                } else if (snapshot.hasError) {
-                  return Text('Error loading members.');
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Text('No members in this community.');
-                } else {
-                  return SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: snapshot.data!
-                          .map((memberInfo) => ListTile(
-                        leading: Icon(Icons.person),
-                        title: Text(memberInfo),
-                      ))
-                          .toList(),
-                    ),
-                  );
-                }
-              },
+                : SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: userEmissions
+                    .map((userInfo) => ListTile(
+                  leading: Icon(Icons.person),
+                  title: Text(userInfo['name']),
+                  subtitle: Text(
+                      '${userInfo['emissions'].toStringAsFixed(2)} kg'),
+                ))
+                    .toList(),
+              ),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
                 child: Text('Close'),
               ),
-              // Optionally, allow users to leave the community
               TextButton(
                 onPressed: () {
                   leaveCommunity(communityId);
@@ -222,6 +243,8 @@ class _CommunityScreenState extends State<CommunityScreen> {
       );
     }
   }
+
+
 
   Future<void> leaveCommunity(String communityId) async {
     try {

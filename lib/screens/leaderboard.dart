@@ -49,7 +49,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         double emissions = double.tryParse(doc['emissions'].toString()) ?? 0.0;
         double quantity = double.tryParse(doc['quantity'].toString()) ?? 1.0;  // Default quantity 1 if missing
 
-        totalEmissions += emissions * quantity;
+        totalEmissions += emissions;
       });
 
       data.add({

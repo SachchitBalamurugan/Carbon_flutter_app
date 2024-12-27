@@ -819,12 +819,24 @@ class _ActivityTrackerState extends State<ActivityTracker> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(
-            'Good day, $username',
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,  // Align to the start (left)
+            children: [
+              Text(
+                'Good day,',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
+              Text(
+                '$username',  // This will wrap to the next line if necessary
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
           ),
           actions: [
             IconButton(
@@ -863,6 +875,7 @@ class _ActivityTrackerState extends State<ActivityTracker> {
             ),
           ],
         ),
+
 
         body: _currentIndex == 0
           ? SingleChildScrollView(

@@ -567,7 +567,7 @@ class _ActivityTrackerState extends State<ActivityTracker> {
 
           print("Percent Change: $percentChange% today $todayEmissions last $lastDayEmissions");
 
-          // Check if we already have data for today in Firestore
+          // Add the percentChange as a new document or update existing points data
           FirebaseFirestore.instance
               .collection('users') // Users collection
               .doc(user.uid) // The user's UID as the document ID
@@ -576,51 +576,73 @@ class _ActivityTrackerState extends State<ActivityTracker> {
               .get()
               .then((snapshot) {
             if (snapshot.docs.isEmpty) {
-              // No points for today, save the new data and update totalPoints
+              // No points for today, add the new data
               FirebaseFirestore.instance
-                  .collection('users') // Users collection
-                  .doc(user.uid) // The user's UID as the document ID
-                  .collection('points') // Subcollection for points
-                  .doc('current') // Store under 'current' document
-                  .set({
+                  .collection('users')
+                  .doc(user.uid)
+                  .collection('points')
+                  .add({
                 'percentChange': percentChange,
                 'lastDayEmissions': lastDayEmissions,
                 'todayEmissions': todayEmissions,
                 'timestamp': FieldValue.serverTimestamp(),
               });
-
-              // Add the new percentChange to totalPoints
-              totalPoints += percentChange.toInt();
             } else {
-              // Points for today already exist, fetch the existing data
-              double storedPercentChange = snapshot.docs[0]['percentChange']?.toDouble() ?? 0.0;
-              DateTime storedTimestamp = (snapshot.docs[0]['timestamp'] as Timestamp).toDate();
+              // Points for today already exist, fetch the latest data
+              bool updated = false;
+              snapshot.docs.forEach((doc) {
+                DateTime storedTimestamp = (doc['timestamp'] as Timestamp).toDate();
+                if (storedTimestamp.day == DateTime.now().day) {
+                  // If the stored data is from today, update it with the latest percentChange
+                  FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(user.uid)
+                      .collection('points')
+                      .doc(doc.id) // Update the specific document
+                      .update({
+                    'percentChange': percentChange,
+                    'lastDayEmissions': lastDayEmissions,
+                    'todayEmissions': todayEmissions,
+                    'timestamp': FieldValue.serverTimestamp(),
+                  });
+                  updated = true;
+                }
+              });
 
-              // If the stored data is from today, update it
-              if (storedTimestamp.day == DateTime.now().day) {
+              if (!updated) {
+                // If no data was updated for today, add the new percentChange for today
                 FirebaseFirestore.instance
-                    .collection('users') // Users collection
-                    .doc(user.uid) // The user's UID as the document ID
-                    .collection('points') // Subcollection for points
-                    .doc('current') // Store under 'current' document
-                    .set({
+                    .collection('users')
+                    .doc(user.uid)
+                    .collection('points')
+                    .add({
                   'percentChange': percentChange,
                   'lastDayEmissions': lastDayEmissions,
                   'todayEmissions': todayEmissions,
                   'timestamp': FieldValue.serverTimestamp(),
                 });
-
-                // Add the new percentChange to totalPoints
-                totalPoints += percentChange.toInt();
-              } else {
-                // If the stored percentChange is higher, keep the existing one
-                if (storedPercentChange > percentChange) {
-                  totalPoints += storedPercentChange.toInt();
-                } else {
-                  totalPoints += percentChange.toInt();
-                }
               }
             }
+          });
+
+          // Update totalPoints by summing all stored percentChanges
+          FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .collection('points')
+              .get()
+              .then((pointsSnapshot) {
+            pointsSnapshot.docs.forEach((doc) {
+              var percentChangeValue = doc['percentChange'];
+              if (percentChangeValue != null) {
+                totalPoints += (percentChangeValue as num).toDouble().toInt();
+              }
+            });
+
+            // Set the total points
+
+
+            print("Total Points: $totalPoints");
           });
         });
       } catch (e) {
@@ -630,6 +652,8 @@ class _ActivityTrackerState extends State<ActivityTracker> {
       print("No user is currently logged in.");
     }
   }
+
+
 
 
   // Function to filter activities based on the selected category

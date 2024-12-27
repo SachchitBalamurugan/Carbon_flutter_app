@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import 'home.dart';
+
 void main() => runApp(LeaderboardApp());
 
 class LeaderboardApp extends StatelessWidget {
@@ -57,8 +59,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
       });
     }
 
-    // Sort users by total emissions
-    data.sort((a, b) => b['totalEmissions'].compareTo(a['totalEmissions']));
+    // Sort users by total emissions (lowest first)
+    data.sort((a, b) => a['totalEmissions'].compareTo(b['totalEmissions']));
 
     // Add rank to the sorted data
     for (int i = 0; i < data.length; i++) {
@@ -92,8 +94,11 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            // You can use Navigator.pop() to go back to the previous screen
-            Navigator.pop(context);
+            // Navigate to the ActivityTracker screen
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ActivityTracker()),
+            );
           },
         ),
       ),

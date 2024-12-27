@@ -10,6 +10,7 @@ import 'package:fl_chart/fl_chart.dart';
 
 import 'ai.dart';
 import 'community.dart';
+import 'communityJOIN.dart';
 import 'leaderboard.dart';
 int totalPoints = 0;
 
@@ -655,7 +656,6 @@ class _ActivityTrackerState extends State<ActivityTracker> {
 
 
 
-
   // Function to filter activities based on the selected category
   void _filterActivities(String? category) {
     if (category != null && categoryActivities.containsKey(category)) {
@@ -833,6 +833,16 @@ class _ActivityTrackerState extends State<ActivityTracker> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => LeaderboardApp()),
+                );
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.groups_outlined),
+              tooltip: 'Groups',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CommunityScreen()),
                 );
               },
             ),
